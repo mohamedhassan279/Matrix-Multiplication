@@ -304,27 +304,5 @@ int main(int argc, char *argv[]) {
         free(B->arr[i]);
     free(B->arr);
     free(B);
-
-//    struct matrix *C = malloc(sizeof(struct matrix));
-//    C->rows = A->rows; C->cols = B->cols;
-//    int **arr = (int **) calloc(C->rows, sizeof(int *));
-//    for (int i = 0; i < C->rows; i++) {
-//        arr[i] = (int *) calloc(C->cols, sizeof(int));
-//    }
-//    C->arr = arr;
-//    printf("%d %d\n", A->rows, A->cols);
-//    for (int i = 0; i < A->rows; i++) {
-//        for (int j = 0; j < A->cols; j++) {
-//            printf("%d ", A->arr[i][j]);
-//        }
-//        printf("\n");
-//    }
-//    printf("%d %d\n", B->rows, B->cols);
-//    for (int i = 0; i < B->rows; i++) {
-//        for (int j = 0; j < B->cols; j++) {
-//            printf("%d ", B->arr[i][j]);
-//        }
-//        printf("\n");
-//    }
     return 0;
 }
