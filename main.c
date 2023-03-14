@@ -15,6 +15,7 @@ struct matrix {
     int **arr;
 };
 
+// struct to pass as argument
 struct multiplication {
     int row;
     int col;
@@ -97,6 +98,7 @@ void write_matrix(int type, struct matrix *C) {
     fclose(out);
 }
 
+
 void *thread_per_matrix(void *args) {
     struct multiplication *per_matrix;
     per_matrix = (struct multiplication *) args;
@@ -140,12 +142,6 @@ void thread_per_matrix_main(struct matrix *A, struct matrix *B) {
     free(C->arr);
     free(C);
     free(per_matrix);
-//    for (int i = 0; i < A->rows; i++) {
-//        for (int j = 0; j < B->cols; j++) {
-//            printf("%d ", res[i][j]);
-//        }
-//        printf("\n");
-//    }
 }
 
 void *thread_per_row(void *args) {
@@ -245,19 +241,22 @@ void thread_per_element_main(struct matrix *A, struct matrix *B) {
 }
 
 int main(int argc, char *argv[]) {
+    // if arguments is wrong
     if (argc != 1 && argc != 4) {
         printf("Error in arguments\n");
         return 0;
     }
     struct matrix *A = malloc(sizeof(struct matrix));
     struct matrix *B = malloc(sizeof(struct matrix));
+
+    // no arguments
     if (argv[1] == NULL) {
         if (read_matrix("a", A) == -1)
             return 0;
         if (read_matrix("b", B) == -1)
             return 0;
         output = "c";
-    } else {
+    } else {        // custom arguments
         if (read_matrix(argv[1], A) == -1)
             return 0;
         if (read_matrix(argv[2], B) == -1)
@@ -265,7 +264,7 @@ int main(int argc, char *argv[]) {
         output = argv[3];
     }
     if (A->cols != B->rows) {
-        printf("Invalid sizes of matrices\n");
+        printf("Columns of first matrix must be equal to rows of second matrix\n");
         for (int i = 0; i < A->rows; i++)
             free(A->arr[i]);
         free(A->arr);
@@ -278,24 +277,28 @@ int main(int argc, char *argv[]) {
     }
     struct timeval stop, start;
 
+    // first method: a thread per matrix
     gettimeofday(&start, NULL); //start checking time
     thread_per_matrix_main(A, B);
     gettimeofday(&stop, NULL); //end checking time
     printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
     printf("Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
 
+    // second method: a thread per row
     gettimeofday(&start, NULL); //start checking time
     thread_per_row_main(A, B);
     gettimeofday(&stop, NULL); //end checking time
     printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
     printf("Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
 
+    // third method: a thread per element
     gettimeofday(&start, NULL); //start checking time
     thread_per_element_main(A, B);
     gettimeofday(&stop, NULL); //end checking time
     printf("Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
     printf("Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
 
+    // free the heap
     for (int i = 0; i < A->rows; i++)
         free(A->arr[i]);
     free(A->arr);
