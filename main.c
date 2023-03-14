@@ -4,7 +4,6 @@
 #include <pthread.h>
 #include <sys/time.h>
 
-#define MAX_LEN 256
 FILE *file;
 char *output; // name of output file
 
@@ -62,7 +61,7 @@ int read_matrix(const char name[], struct matrix *m) {
 
 // write the output matrix in file
 void write_matrix(int type, struct matrix *C) {
-    char filename[MAX_LEN];
+    char filename[256];
     strcpy(filename, output);
     switch (type) {
         case 0:
