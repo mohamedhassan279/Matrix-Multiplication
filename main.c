@@ -116,16 +116,16 @@ void *thread_per_matrix(void *args) {
 
 // main function of the method of per matrix
 void thread_per_matrix_main(struct matrix *A, struct matrix *B) {
-    struct multiplication *per_matrix = malloc(sizeof(struct multiplication));
+    pthread_t thread;
     int **res = (int **) calloc(A->rows, sizeof(int *));
     for (int i = 0; i < A->rows; i++) {
         res[i] = (int *) calloc(B->cols, sizeof(int));
     }
     struct matrix *C = malloc(sizeof(struct matrix));
     C->rows = A->rows; C->cols = B->cols; C->arr = res;
+    struct multiplication *per_matrix = malloc(sizeof(struct multiplication));
     per_matrix->row = 0; per_matrix->col = 0;
     per_matrix->A = A; per_matrix->B = B; per_matrix->C = C;
-    pthread_t thread;
     if (pthread_create(&thread, NULL, thread_per_matrix, (void *) per_matrix)) {
         printf("Can not create a thread\n");
         exit(1);
@@ -136,7 +136,6 @@ void thread_per_matrix_main(struct matrix *A, struct matrix *B) {
         free(C->arr[i]);
     free(C->arr);
     free(C);
-    free(per_matrix);
 }
 
 // thread function in (per row) method
@@ -210,7 +209,7 @@ void thread_per_element_main(struct matrix *A, struct matrix *B) {
             struct multiplication *per_element = malloc(sizeof(struct multiplication));
             per_element->row = i; per_element->col = j;
             per_element->A = A; per_element->B = B; per_element->C = C;
-            if (pthread_create(&threads[i][j], NULL, thread_per_row, (void *) per_element)) {
+            if (pthread_create(&threads[i][j], NULL, thread_per_element, (void *) per_element)) {
                 printf("Can not create a thread\n");
                 exit(1);
             }
@@ -265,25 +264,23 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     struct timeval stop, start;
+
     // first method: a thread per matrix
     gettimeofday(&start, NULL); //start checking time
     thread_per_matrix_main(A, B);
     gettimeofday(&stop, NULL); //end checking time
-    printf("Per matrix: Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
     printf("Per matrix: Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
 
     // second method: a thread per row
     gettimeofday(&start, NULL); //start checking time
     thread_per_row_main(A, B);
     gettimeofday(&stop, NULL); //end checking time
-    printf("Per row: Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
     printf("Per row: Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
 
     // third method: a thread per element
     gettimeofday(&start, NULL); //start checking time
     thread_per_element_main(A, B);
     gettimeofday(&stop, NULL); //end checking time
-    printf("Per element: Seconds taken %lu\n", stop.tv_sec - start.tv_sec);
     printf("Per element: Microseconds taken: %lu\n", stop.tv_usec - start.tv_usec);
 
     // free the heap
