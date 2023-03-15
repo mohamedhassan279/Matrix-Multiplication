@@ -264,7 +264,6 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     struct timeval stop, start;
-
     // first method: a thread per matrix
     gettimeofday(&start, NULL); //start checking time
     thread_per_matrix_main(A, B);
